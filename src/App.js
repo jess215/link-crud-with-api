@@ -1,4 +1,4 @@
-import { Link, Outlet } from 'react-router-dom';
+import { Link as ReactRouterLink, Outlet } from "react-router-dom"
 
 function App() {
   return (
@@ -6,17 +6,14 @@ function App() {
       <h1>Starter App</h1>
       <nav
         style={{
-          borderBottom:'1px solid'
+          borderBottom: '1px solid'
         }}
         >
-          <Link to='/'>Links</Link> | {' '}
-          <Link to='/about'>About</Link> | {' '}
-          <Link to='/links/new'>New Link</Link>
+          <ReactRouterLink to='/'>Links</ReactRouterLink>
         </nav>
-        <p>Outlet component here</p>
         <Outlet />
     </div>
-  );
+  )
 }
 
-export default App;
+export default App

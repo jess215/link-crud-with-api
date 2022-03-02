@@ -1,23 +1,96 @@
-import React, { useState } from "react";
+import axios from "axios"
+import React, { useState } from "react"
 
-// createContext HERE this doing a lot for
-// create Context/Provider, get and set out data
-export const DataContext = React.createContext();
+export const DataContext = React.createContext()
 
 const DataProvider = (props) => {
-  const [dataDemo, setDataDemo] = useState('dataDemo from provider');
+  const [links, setLinks] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(false)
 
-  // create an object that will be 'global state'
+  const beforeApiCallSetup = () => {
+    setLoading(true)
+    setError(false)
+  }
+
+  const getLinks = async () => {
+    beforeApiCallSetup()
+    try {
+      let res = await axios.get(
+        "https://link-app-sp22.herokuapp.com/api/links"
+      )
+      setLinks(res.data)
+    } catch (err) {
+      alert("err occurred letting links")
+      setError(true)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const addLink = async (linkData) => {
+    beforeApiCallSetup()
+    try {
+      let res = await axios.post(
+        "https://link-app-sp22.herokuapp.com/api/links",
+        linkData
+      )
+      console.log(res.data)
+      setLinks([...links, res.data])
+    } catch (err) {
+      console.log(err)
+      alert("err occurred gettings links")
+      setError(true)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const updateLink = async (linkData) => {
+    beforeApiCallSetup()
+    try {
+      let res = await axios.put(
+        "https://link-app-sp22.herokuapp.com/api/links/${linkData.id}",
+        linkData
+      )
+      setLinks(links.map((l) => (l.id === res.data.id ? res.data : l)))
+    } catch (err) {
+      alert("err occurred getting links")
+      setError(true)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const deleteLink = async (id) => {
+    beforeApiCallSetup()
+    try {
+      let res = await axios.delete(
+        "https://link-app-sp22.herokuapp.com/api/links/${id}"
+      )
+      setLinks(links.filter((l) => l.id !== id))
+    } catch (err) {
+      alert("err occurred getting links")
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const dataProviderThing = {
-    dataDemo,
-    setDataDemo
-};
-  // return the provider which will wrap my all app
+    links,
+    getLinks,
+    addLink,
+    updateLink,
+    deleteLink,
+    loading,
+    error,
+  }
+
   return (
     <DataContext.Provider value={dataProviderThing}>
       {props.children}
     </DataContext.Provider>
-  );
-};
+  )
+}
 
-export default DataProvider;
+export default DataProvider
